@@ -156,6 +156,11 @@ if __name__ == "__main__":
 
 Результат работы скрипта и тестирование репликации:
 
+![Replication_AdobeCreativeCloudExpress](https://user-images.githubusercontent.com/97679190/171992034-4e91747b-bf1a-462e-8655-a22d25f9a740.gif)
+
+
+
+
 https://user-images.githubusercontent.com/97679190/171991451-2cd1016b-0cd6-4bee-ac7a-a606f187496b.mp4
 
 

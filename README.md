@@ -70,7 +70,7 @@
 
 Затем открываем файл /etc/postgresql/'Ваша версия postgresql'/main/postgresql.conf, находим, раскомментируем и указываем следующие значения:
 
-    listen_addresses = 'localhost, REPLICA_ВНУТРЕННИЙ_IP'
+    listen_addresses = 'localhost, 'IP адрес Replica-сервер''
     wal_level = hot_standby
     archive_mode = on
     archive_command = 'cd .'

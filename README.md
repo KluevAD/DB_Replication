@@ -107,53 +107,56 @@
 
 Будем использовать следующий Python-скрипт:
 
-    def Replication_process(Master_ip, Replica_ip):
-        id = 1
-        flag_promote = False
-        flag_master_drop = False
-        while ( True ):
-            if ( ping_check(Master_ip) and flag_master_drop == False ):
-                print(f"[{id}] Master is connected")
-                connection_check(Master_ip)
+```python
+def Replication_process(Master_ip, Replica_ip):
+    id = 1
+    flag_promote = False
+    flag_master_drop = False
+    while ( True ):
+        if ( ping_check(Master_ip) and flag_master_drop == False ):
+            print(f"[{id}] Master is connected")
+            connection_check(Master_ip)
 
-            if ( not ping_check(Master_ip) and ping_check(Replica_ip) ):
-                print(f"[{id}] [Master is not available, connected to Replica]")
-                connection_check(Replica_ip)
-                flag_master_drop = True
-                if (flag_promote == False):
-                    os.system(f"ssh postgres@{Replica_ip} '/usr/lib/postgresql/14/bin/pg_ctl promote -D /var/lib/postgresql/14/main > /dev/null'")
-                    flag_promote = True
-                    print("[Replica is main server now].")
+        if ( not ping_check(Master_ip) and ping_check(Replica_ip) ):
+            print(f"[{id}] [Master is not available, connected to Replica]")
+            connection_check(Replica_ip)
+            flag_master_drop = True
+            if (flag_promote == False):
+                os.system(f"ssh postgres@{Replica_ip} '/usr/lib/postgresql/14/bin/pg_ctl promote -D /var/lib/postgresql/14/main > /dev/null'")
+                flag_promote = True
+                print("[Replica is main server now].")
 
-            if ( ping_check(Master_ip) and flag_master_drop ):
-                print((f"[{id}] Connection with Master restored!"))
-                connection_check(Master_ip)
-                try:
-                    os.system(f"ssh postgres@{Master_ip} 'rm -rf /var/lib/postgresql/14/main && mkdir /var/lib/postgresql/14/main && chmod go-rwx /var/lib/postgresql/14/main && pg_basebackup -P -X stream -c fast -h 192.168.200.101 -U postgres -D /var/lib/postgresql/14/main && sudo systemctl restart postgresql'")
-                    os.system(f"ssh postgres@{Replica_ip} 'rm -rf /var/lib/postgresql/14/main && mkdir /var/lib/postgresql/14/main && chmod go-rwx /var/lib/postgresql/14/main && pg_basebackup -P -R -X stream -c fast -h 192.168.200.100 -U postgres -D /var/lib/postgresql/14/main && sudo systemctl restart postgresql'")
-                    flag_master_drop = False
-                    flag_promote = False
-                    print("Replication successfully!") 
-                except (Exception, Error) as error:
-                    print(f"Replication error!")
-            id+=1
-            time.sleep(2)
+        if ( ping_check(Master_ip) and flag_master_drop ):
+            print((f"[{id}] Connection with Master restored!"))
+            connection_check(Master_ip)
+            try:
+                os.system(f"ssh postgres@{Master_ip} 'rm -rf /var/lib/postgresql/14/main && mkdir /var/lib/postgresql/14/main && chmod go-rwx /var/lib/postgresql/14/main && pg_basebackup -P -X stream -c fast -h 192.168.200.101 -U postgres -D /var/lib/postgresql/14/main && sudo systemctl restart postgresql'")
+                os.system(f"ssh postgres@{Replica_ip} 'rm -rf /var/lib/postgresql/14/main && mkdir /var/lib/postgresql/14/main && chmod go-rwx /var/lib/postgresql/14/main && pg_basebackup -P -R -X stream -c fast -h 192.168.200.100 -U postgres -D /var/lib/postgresql/14/main && sudo systemctl restart postgresql'")
+                flag_master_drop = False
+                flag_promote = False
+                print("Replication successfully!") 
+            except (Exception, Error) as error:
+                print(f"Replication error!")
+        id+=1
+        time.sleep(2)
 
-    def main():
+def main():
 
-        Master_ip = '192.168.200.100'
-        Replica_ip = '192.168.200.101'
+    Master_ip = '192.168.200.100'
+    Replica_ip = '192.168.200.101'
     
-        Replication_process(Master_ip, Replica_ip)
+    Replication_process(Master_ip, Replica_ip)
 
-    if __name__ == "__main__":
-        main()
+if __name__ == "__main__":
+    main()
+
+```
 
 Он позволяет проверить связь с Master-сервером и Replica-сервером, проверить доступность БД, при потери соединения с Master-сервером переключиться на Replica-сервер, при восстановлении соединения с Master-сервером переключиться на Master-сервер и клонировать данные с Replica-сервера. 
 
 Результат работы скрипта и тестирование репликации:
 
-![unknown_2022_06_04-00_12_Trim](https://user-images.githubusercontent.com/97679190/171991264-e379a0c7-c189-45ff-bd35-7141fe6fa7d6.gif)
+https://user-images.githubusercontent.com/97679190/171991451-2cd1016b-0cd6-4bee-ac7a-a606f187496b.mp4
 
 
 

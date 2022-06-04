@@ -183,7 +183,6 @@ if __name__ == "__main__":
 
 https://user-images.githubusercontent.com/97679190/171991451-2cd1016b-0cd6-4bee-ac7a-a606f187496b.mp4
 
-![Replication (1)](https://user-images.githubusercontent.com/97679190/171992571-35dee8d7-e1a2-4e15-b5e7-eb0a4e04d725.gif)
 
 
 

@@ -108,6 +108,32 @@
 Будем использовать следующий Python-скрипт:
 
 ```python
+import psycopg2
+import sys
+import time
+import os, platform
+from psycopg2 import Error
+
+
+def ping_check(hostname):
+    response = os.system("ping -c 1 " + hostname + " > /dev/null")
+    if response == 0:
+        ping_status = True
+    else:
+        ping_status = False
+    return ping_status
+
+def connection_check(check_ip):
+    try:
+        connection = psycopg2.connect(user="postgres", password="12345", host=check_ip, port="5432", database="postgres")
+        cursor = connection.cursor()
+        sql_query = 'select 1;'
+        cursor.execute(sql_query)
+        connection.commit()
+        print("Database is available")
+    except (Exception, Error) as error:
+         print("Database is not available")
+
 def Replication_process(Master_ip, Replica_ip):
     id = 1
     flag_promote = False
@@ -149,7 +175,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 ```
 
 Он позволяет проверить связь с Master-сервером и Replica-сервером, проверить доступность БД, при потери соединения с Master-сервером переключиться на Replica-сервер, при восстановлении соединения с Master-сервером переключиться на Master-сервер и клонировать данные с Replica-сервера. 
@@ -158,6 +183,7 @@ if __name__ == "__main__":
 
 https://user-images.githubusercontent.com/97679190/171991451-2cd1016b-0cd6-4bee-ac7a-a606f187496b.mp4
 
+![Replication (1)](https://user-images.githubusercontent.com/97679190/171992571-35dee8d7-e1a2-4e15-b5e7-eb0a4e04d725.gif)
 
 
 
